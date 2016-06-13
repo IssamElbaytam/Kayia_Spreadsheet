@@ -1,8 +1,8 @@
-[![Kayia logo](http://785369b995de124132d4-4015ae171f828765e3ea59ae37d1f977.r95.cf5.rackcdn.com/logo3.png)]
+![Kayia logo](http://785369b995de124132d4-4015ae171f828765e3ea59ae37d1f977.r95.cf5.rackcdn.com/logo3.png)
 
 ## Spreadsheet interface to Kayia
 
-[![MIT License][license-image]][license-url]]
+![MIT License][license-image]][license-url]
 
 ### To Do List
 
