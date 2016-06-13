@@ -2,10 +2,6 @@
 
 ## Spreadsheet interface to Kayia
 
-![MIT License][license-image]][license-url]
-
-### To Do List
-
 | To Do          		|                                 |
 |-----------------------|-----------------------------|
 | Scrolling error		| When scrolling text will move to different cell |
