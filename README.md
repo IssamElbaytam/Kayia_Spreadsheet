@@ -8,3 +8,5 @@
 | Text width			| Textbox needs to expand to full cell width |
 | Text breaking			| When entering text longer than the cell, it needs to hide text if text exists in cell to the right |
 | Edit column header	| Needs to be able to edit the column headers (and row headers eventually) |
+| Multiple grids	| Currently has drawing issues when more than one grid is rendered at the same time |
+| Reference lookup	| Click on row header & then ref icon brings up  a reference lookup form for that row |
