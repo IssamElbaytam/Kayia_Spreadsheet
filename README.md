@@ -12,5 +12,7 @@
 | [_] | Reference lookup	| Click on row header & then ref icon brings up  a reference lookup form for that row | (No video) |
 
 Legend:
+
 o - I'm working on this
+
 x - I've finished this
