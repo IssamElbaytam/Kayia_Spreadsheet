@@ -22,8 +22,8 @@ Grid.prototype.renderData = function() // For all the this.data in the this.data
 			var attr = {};
 			var addr = splitAddress(key);
 			if ((addr[0] - this.scroll.left) >= 0 && (addr[1]  - this.scroll.top) >= 0) {
-				var left = this.placeColumn(addr[0] - this.scroll.left + 1);
-				var top =  this.placeRow(addr[1]  - this.scroll.top + 1);
+                                var left = this.placeColumn(addr[0]);
+                                var top =  this.placeRow(addr[1]);
 				var x_pos = left + 5;
 				var y_pos = top + (this.RowHeight((addr[1] - this.scroll.top + 1))/1.3);
 
@@ -46,7 +46,8 @@ Grid.prototype.editCell = function(highlight, startChar)
 		ieditor.style["background-color"] = (this.selection.row <= 0) ? "#c3d3e5" : "#f5faff";
 		ieditor.style.left = left + this.left() + 4 + "px"; // + padding
 		ieditor.style.top = top + this.top() + 4 + "px"; // + padding for logo/queryBar
-		//ieditor.style.width = "70px"; 	TODO: Adjust to width
+		alert(this.ColWidth(this.selection.col) + 'px');
+		ieditor.style.width = this.ColWidth(this.selection.col) + 'px';
 		//ieditor.style.height = "17px";	TODO: Adjust to height
 		ieditor.style.display = "block";		
 		
