@@ -17,8 +17,8 @@ var GRAY_4 = "#444";
 
 var tmpGridObject;
 
-function columnCode2(index, override) {	// Given 65 returns AB
-	var result = columnCode(index);
+function columnCode2(colNumber, override) {	// Given 65 returns AB
+	var result = columnCode(colNumber);
 	if (override[result]) return override[result];
 	return result;
 }
@@ -39,22 +39,31 @@ function columnCode(colNumber)
 	return columnName;
 }
 
-function reverseColumnCode(code) {	// Given AB returns 65
+function reverseColumnCode2(reversedCode, override){
+	for(var i=1; i < override.length; i++){
+		if(override[columnCode(i)] == reversedCode){
+			return i;
+		}
+	}
+	return reverseColumnCode(reversedCode);
+}
+
+function reverseColumnCode(reversedCode) {	// Given AB returns 28
 	var result = 0;
-	for (var i=code.length-1; i>=0; i--) {
-		result = result + (code.charCodeAt(i)-64)* Math.pow(64,(code.length-(i+1)));
+	for (var i=reversedCode.length-1; i>=0; i--) {
+		result = result + (reversedCode.charCodeAt(i)-64)* Math.pow(26,(reversedCode.length-(i+1)));
 	}
 	return result;
 }
 
-function splitAddress(addr) {		// Takes AB34 and returns [65, 34]
+function splitAddress(addr) {		// Takes "some column name'34" and returns [the column # of some column name, 34]
 	var result = ["", ""];
 	var resultIndex = 0;
 	for (var i=0; i < addr.length; i++) {
 		if ((addr.charAt(i) == "'" || addr.charAt(i) == ",") && resultIndex == 0) resultIndex++;
 		else result[resultIndex] += addr.charAt(i);
 	}
-	result[0] = reverseColumnCode(result[0]); // Convert AB to 65
+	result[0] = reverseColumnCode2(result[0],this.grids.maingrid.col_override); // Convert column name to column number
 	return result;
 }
 
