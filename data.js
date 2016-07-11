@@ -22,16 +22,21 @@ Grid.prototype.renderData = function() // For all the this.data in the this.data
 			var attr = {};
 			var addr = splitAddress(key);
 			if ((addr[0] - this.scroll.left) >= 0 && (addr[1]  - this.scroll.top) >= 0) {
-				var left = this.placeColumn(addr[0] - this.scroll.left + 1);
-				var top =  this.placeRow(addr[1]  - this.scroll.top + 1);
+                                var left = this.placeColumn(addr[0]);
+                                var top =  this.placeRow(addr[1]);
 				var x_pos = left + 5;
-				var y_pos = top + (this.RowHeight((addr[1] - this.scroll.top + 1))/1.3);
+				var row_height = this.RowHeight(addr[1]);
+				var col_width = this.ColWidth(addr[0]);
+//				var y_pos = top + (this.RowHeight((addr[1] - this.scroll.top + 1))/1.3);
+				var y_pos = top + (row_height/1.3);
 
 				if (isNumeric(this.data[key])) attr.align = "right"; else attr.align = "left"; 
-				if (attr.align == "right") x_pos = left + this.ColWidth(addr[0] - this.scroll.left - 1) - 3;
+				if (attr.align == "right") x_pos = left + col_width - 3;
 			
 				SetTextStyle(this.context, attr); 	// Text header
 				//this.context.fillText('HELLO', x_pos, y_pos);
+				this.context.rect(left, top, col_width, row_height);
+				this.context.clip();
 				this.context.fillText(evaluated(deobjected(this.data[key])), x_pos, y_pos);
 			}
 		}
@@ -39,20 +44,32 @@ Grid.prototype.renderData = function() // For all the this.data in the this.data
 }
 
 Grid.prototype.editCell = function(highlight, startChar) 
-{
+{	
+	if(this.inEdit == true){
+		this.finishEdit();
+	}
 	if (this.selection.col == this.selection.endCol && this.selection.row == this.selection.endRow) {
 		var left = this.placeColumn(this.selection.col);
 		var top =  this.placeRow(this.selection.row);
 		ieditor.style["background-color"] = (this.selection.row <= 0) ? "#c3d3e5" : "#f5faff";
 		ieditor.style.left = left + this.left() + 4 + "px"; // + padding
 		ieditor.style.top = top + this.top() + 4 + "px"; // + padding for logo/queryBar
+		ieditor.style.height = this.RowHeight(this.selection.row) + "px";
+		ieditor.style.width = this.ColWidth(this.selection.col) + "px";
+//var keyup = function(e){
+//	var t = e.target || e.srcElement;
+//	var v = Math.max(t.scrollWidth, 1);
+//	t.setAttribute ? t.setAttribute('scrollWidth', v) : (t['scrollWidth'] = v);
+//};
+//ieditor.addEventListener ? ieditor.addEventListener('keyup', keyup) : ieditor.attachEvent('onkeyup', keyup);
+
 		//ieditor.style.width = "70px"; 	TODO: Adjust to width
 		//ieditor.style.height = "17px";	TODO: Adjust to height
 		ieditor.style.display = "block";		
 		
 		if (!this.inEdit) ieditor.innerHTML = "";
-		if (this.data[columnCode(this.selection.col-1) + "'" + this.selection.row] != undefined)
-			ieditor.innerHTML = this.data[columnCode(this.selection.col-1) + "'" + this.selection.row];
+		if (this.data[columnCode(this.selection.col) + "'" + this.selection.row] != undefined)
+			ieditor.innerHTML = this.data[columnCode(this.selection.col) + "'" + this.selection.row];
 		//ieditor.innerHTML += startChar;
 		//var r = window.getSelection().getRangeAt(0); 
 		//if (startChar != '') { r.setStart(ieditor,1); r.setEnd(ieditor,1); r.START_TO_START = 1; } 
@@ -66,11 +83,11 @@ Grid.prototype.finishEdit = function()
 	if (this.inEdit) {
 		var value = cleanBR(ieditor.innerHTML);
 		if (this.selection.row <= 0) {
-			this.col_override[columnCode(this.selection.col-1)] = value;
+			this.col_override[columnCode(this.selection.col)] = value;
 		} else {
-			var cartesian = columnCode(this.selection.col-1) + "'" + this.selection.row;
+			var cartesian = columnCode(this.selection.col) + "'" + this.selection.row;
 			var predicate = document.getElementById('query').value;
-			if (this.gridElement.id == 'kidgrid') predicate += '.' + columnCode(grids.maingrid.selection.col-1) + "'" + grids.maingrid.selection.row;
+			if (this.gridElement.id == 'kidgrid') predicate += '.' + columnCode(grids.maingrid.selection.col) + "'" + grids.maingrid.selection.row;
 			this.data[cartesian] = value;
 			//$.getJSON("http://127.0.0.1:8448/test?" + predicate + '.' + cartesian + ':=' + (encodeURIComponent(isNumber(value)?value:'"' + value + '"')), function() {});
 		}

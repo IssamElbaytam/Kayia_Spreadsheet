@@ -153,7 +153,7 @@ Grid.prototype.drawColumns = function()
 		}
 		
 		SetTextStyle(this.context, {}); 	// Text header
-		if (this.showColHeader) this.context.fillText(columnCode2(c-1, this.col_override), colWidthTotal  + this.ColWidth(0) + (this.ColWidth(c)/2), this.gridTop + this.RowHeight(0) - 6);  
+		if (this.showColHeader) this.context.fillText(columnCode2(c, this.col_override), colWidthTotal  + this.ColWidth(0) + (this.ColWidth(c)/2), this.gridTop + this.RowHeight(0) - 6);  
 		colWidthTotal += this.ColWidth(c);
 		isSelected = false;
 	}
@@ -238,7 +238,7 @@ Grid.prototype.setRangeBox = function()
 	document.getElementById("selection").innerHTML = "";
 	if (this.selectionLocation.left != undefined) {
 		if (this.selection.col || this.selection.row) {
-			var leftCol = ""; if (this.selection.col > 0) leftCol = columnCode(this.selection.col-1);
+			var leftCol = ""; if (this.selection.col > 0) leftCol = columnCode(this.selection.col);
 			var leftRow = this.selection.row;
 			var range = "";	var rightCol = ""; var rightRow = "";
 
@@ -247,8 +247,8 @@ Grid.prototype.setRangeBox = function()
 					range = ".."
 					rightCol = "";
 					if (this.selection.endCol > 0) {
-						if (this.selection.col < this.selection.endCol) rightCol = columnCode(this.selection.endCol-1);
-						else { rightCol = leftCol; leftCol = columnCode(this.selection.endCol-1); }
+						if (this.selection.col < this.selection.endCol) rightCol = columnCode(this.selection.endCol);
+						else { rightCol = leftCol; leftCol = columnCode(this.selection.endCol); }
 					}
 					if (this.selection.row < this.selection.endRow) rightRow = this.selection.endRow;
 					else { rightRow = leftRow; leftRow = this.selection.endRow; }

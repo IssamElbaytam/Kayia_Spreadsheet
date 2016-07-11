@@ -25,7 +25,7 @@ function columnCode2(index, override) {	// Given 65 returns AB
 
 function columnCode(colNumber)
   {
-	var dividend = colNumber+1;
+	var dividend = colNumber;
 	var columnName = '';
 	var modulo;
 	var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -79,7 +79,7 @@ function keypress(ev) {
 		if (key == 38) { if (gridInEdit.selection.row > 1) gridInEdit.selection.row -= 1; }		// Up arrow
 		if (key == 39) { gridInEdit.selection.col += 1; }		// Right arrow
 		if (key == 40) { gridInEdit.selection.row += 1; }		// Down arrow
-		if (key == 46) { gridInEdit.data[columnCode(gridInEdit.selection.col-1) + "'" + gridInEdit.selection.row] = ""; }		// Delete key
+		if (key == 46) { gridInEdit.data[columnCode(gridInEdit.selection.col) + "'" + gridInEdit.selection.row] = ""; }		// Delete key
 		if ((key >= 37 && key <= 40) || key == 46) { 
 			gridInEdit.selection.endCol = gridInEdit.selection.col; 
 			gridInEdit.selection.endRow = gridInEdit.selection.row;
