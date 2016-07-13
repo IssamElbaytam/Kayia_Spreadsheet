@@ -32,12 +32,13 @@ Grid.prototype.renderData = function() // For all the this.data in the this.data
 
 				if (isNumeric(this.data[key])) attr.align = "right"; else attr.align = "left"; 
 				if (attr.align == "right") x_pos = left + col_width - 3;
-			
+				this.context.save();
+				this.context.beginPath();
 				SetTextStyle(this.context, attr); 	// Text header
-				//this.context.fillText('HELLO', x_pos, y_pos);
 				this.context.rect(left, top, col_width, row_height);
-				this.context.clip();
+				this.context.clip()
 				this.context.fillText(evaluated(deobjected(this.data[key])), x_pos, y_pos);
+				this.context.restore();
 			}
 		}
 	}
