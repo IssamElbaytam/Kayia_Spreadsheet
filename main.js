@@ -1,5 +1,6 @@
 var gridInEdit;		// Holds the selected grid 
-var grids = [];
+//var grids = [];
+var grids = {};
 var queryCtrl, selCtrl, ieditor;
 var editorType = 'grid';
 var toolbar_grid = { "new" : {left:144, type:"button"} ,
