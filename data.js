@@ -52,11 +52,14 @@ Grid.prototype.editCell = function(highlight, startChar)
 	if (this.selection.col == this.selection.endCol && this.selection.row == this.selection.endRow) {
 		var left = this.placeColumn(this.selection.col);
 		var top =  this.placeRow(this.selection.row);
+		var px_offset = 4;
 		ieditor.style["background-color"] = (this.selection.row <= 0) ? "#c3d3e5" : "#f5faff";
-		ieditor.style.left = left + this.left() + 4 + "px"; // + padding
-		ieditor.style.top = top + this.top() + 4 + "px"; // + padding for logo/queryBar
-		ieditor.style.height = this.RowHeight(this.selection.row) + "px";
-		ieditor.style.width = this.ColWidth(this.selection.col) + "px";
+		ieditor.style.left = left + this.left() + px_offset + "px"; // + padding
+//		ieditor.style.left = left + this.left() + "px"; // + padding
+		ieditor.style.top = top + this.top() + px_offset + "px"; // + padding for logo/queryBar
+//		ieditor.style.top = top + this.top() + "px"; // + padding for logo/queryBar
+		ieditor.style.height = this.RowHeight(this.selection.row) - px_offset + "px";
+		ieditor.style.width = this.ColWidth(this.selection.col) - px_offset + "px";
 //var keyup = function(e){
 //	var t = e.target || e.srcElement;
 //	var v = Math.max(t.scrollWidth, 1);
