@@ -177,35 +177,6 @@ Grid.prototype.loadDataToGridElement = function(result)
 	}
 }
 
-Grid.prototype.loadDataObject = function(result) 
-{
-	if (typeof result != 'object')  { this.data["A'1"] = result; return; } // If data is scalar, place in A'1
-	var columnList = result["32"];
-	this.data = {};
-	var rows = {};  
-	rows = result["33"];
-	var realrows = []
-	delete rows['clone'];
-	for (var row in rows) {								// go through each row of the data
-		if (rows.hasOwnProperty(row)) {
-			realrows.push(row);
-		}
-	}
-	for (var i=0; i<realrows.length;i++) {
-		var rowNumber = rows[realrows[i]].label;
-		var realcols = [];
-		for (var col in rows[realrows[i]]) {
-			realcols.push(col);
-		}
-		for (var j=0; j<realcols.length;j++) {
-			var col = realcols[j];
-			if (col != 'label' && col != 'clone') {	//TODO: get rid of toUpperCase()
-				this.data[columnList[col].label.toUpperCase() + rowNumber] = rows[realrows[i]][col];
-			}
-		}
-	}
-}
-
 function resolveEvent(ev) {
 	if (ev.layerX || ev.layerX == 0) { // Firefox
 		ev._x = ev.layerX;
