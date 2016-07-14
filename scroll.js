@@ -79,8 +79,10 @@ Grid.prototype.handleScrollObject = function(x, y)
 		case this.SCROLL_DOWN:  		this.adjustSlideV(this.slideV + 1);				break;	// Scrollbar Down Arrow
 		case this.SCROLL_LEFT:  		this.adjustSlideH(this.slideH - 1);				break;	// Scrollbar Left Arrow
 		case this.SCROLL_RIGHT:  		this.adjustSlideH(this.slideH + 1);				break;	// Scrollbar Right Arrow
-		case this.VERTICAL_BAR:  		if (y < this.slideV) this.adjustSlideV(this.slideV - 5); else this.adjustSlideV(this.slideV + 5); break;	// Vertical Scrollbar 
-		case this.HORIZONTAL_BAR:    	if (x < this.slideH) this.adjustSlideH(this.slideH - 5); else this.adjustSlideH(this.slideH + 5); break;	// Horizontal Scrollbar
+//		case this.VERTICAL_BAR:  		if (y < this.slideV) this.adjustSlideV(this.slideV - 5); else this.adjustSlideV(this.slideV + 5); break;	// Vertical Scrollbar 
+//		case this.HORIZONTAL_BAR:    	if (x < this.slideH) this.adjustSlideH(this.slideH - 5); else this.adjustSlideH(this.slideH + 5); break;	// Horizontal Scrollbar
+		case this.VERTICAL_BAR:  	if (y < this.slideV) this.inScroll = this.SCROLL_UP; else this.inScroll = this.SCROLL_DOWN; this.handleScrollObject(x,y);break;	// Vertical Scrollbar 
+		case this.HORIZONTAL_BAR:    	if (x < this.slideH) this.inScroll = this.SCROLL_LEFT; else this.inScroll = this.SCROLL_RIGHT; this.handleScrollObject(x,y); break;	// Horizontal Scrollbar
 	}
 }
 function handleScrollObject2(x, y) { try { tmpGridObject.handleScrollObject(x, y); } catch (e) {} }
