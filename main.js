@@ -63,10 +63,7 @@ function load() {
 	grids.maingrid = new Grid(null, document.getElementById("maingrid"), null, null, null,
 		/* Width */  function()  { return window.innerWidth - this.left(); }, 
 					{"project": "", "showQueryRibbon": true, "selectionLocation": {"left": selLeft, "top": 18}} );		//, "col_override" : { "B" : "Name" }
-}
-
-var dontload = function() 
-{	
+	
 	grids.kidgrid = new Grid(queryCtrl.value + '', document.getElementById("kidgrid"), 
 		/* Top */ function()  { return 52; },
 		/* Left */  function()  { return window.innerWidth - 300; }, 
