@@ -20,7 +20,8 @@ function Grid(query, gridElement, top, left, height, width, gridOptions) {
 	if (gridOptions.project === undefined) 			this.project = ""; 		else this.project = gridOptions.project;					// A unique project code, e.g. za4wF7
 	if (gridOptions.propertyBox === undefined) 	this.propertyBox = false; 			else this.propertyBox = gridOptions.propertyBox;		// Show selection on grid?
 	if (gridOptions.col_override === undefined) this.col_override = {}; 			else this.col_override = gridOptions.col_override;
-
+	if (gridOptions.row_override === undefined) 	this.row_override = {}; 		else this.row_override = gridOptions.row_override;
+	
 	this.tables = {};
 	this.selection = {};
 	this.rowIndexes = {};

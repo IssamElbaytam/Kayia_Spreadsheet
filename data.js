@@ -1,20 +1,75 @@
-function displayResult(data) { grids.maingrid.loadDataToGridElement(data[0]); }
 
 function runQuery(cmd) {
 
-	$.ajax({
-		type: 'GET',
-		url: "https://kayia.org/" + cmd,
-		async: true,
-		contentType: 'application/json',
-		dataType: 'jsonp',
-		success: function(data) {
-			alert(data);
-			//if (data) func(data, cmdID);
-		},
-		error: function(e) { console.log('error:' + e.statusText); }
-	});
+	if (cmd == 'Film') grids.maingrid.loadDataToGridElement(JSON.parse('{"#ragingbull":{"Title":"Raging Bull","Director":"#mscorsese","Released":"1975"},"#delicatessen":{"Title":"Delicatessen","Director":["#jpjeunet","#mcaro"],"Released":"1991"},"#bluevelvet":{"Title":"Blue Velvet","Director":"#dlynch","Released":"1986"}}'))
+	
+	/*  This can be removed when placed on the site, or use http:// instead of https://
+        $.ajax({
+                type: 'GET',
+                url: "https://kayia.org/" + cmd,
+                async: true,
+                contentType: 'application/json',
+                dataType: 'jsonp',
+                success: function(data) {
+                        grids.maingrid.loadDataToGridElement(data);
+                        //alert(data);
+                        //if (data) func(data, cmdID);
+                },
+                error: function(e) {
+                        console.log('error:' + e.statusText);
+                }
+        });
+	*/
 }
+function flip(coll) { 
+	var result = {};
+	for (var obj in coll) {
+		if (coll.hasOwnProperty(obj)) { result[coll[obj]] = obj; }
+	}
+	return result;
+}
+
+Grid.prototype.getNextColOverrideIndex = function() {
+	for (var i = 0; i < Object.keys(this.col_override).length; i++) {
+		if (!this.col_override[columnCode(i)]) break;
+	}
+	return columnCode(i);
+}
+
+Grid.prototype.getNextRowOverrideIndex = function() {
+	for (var i = 1; i <= Object.keys(this.row_override).length; i++) {
+		if (!this.row_override[''+i]) break;
+	}
+	return i;
+}
+
+Grid.prototype.loadDataObject = function(data) 
+{
+	if (typeof data != 'object')  { 
+		this.data["A'1"] = data; return; // If data is scalar, place in A'1
+	}
+	this.row_override = [];
+	this.col_override = [];
+	this.data = {};
+	
+	for (var rowID in data) {								// go through each row of the data
+		if (data.hasOwnProperty(rowID)) { 
+			this.row_override[this.getNextRowOverrideIndex()] = rowID;
+			for (var column in data[rowID]) {	
+				if (data[rowID].hasOwnProperty(column)) { 
+					var colLetter = flip(this.col_override)[column];
+					if (!colLetter) {
+						colLetter = this.getNextColOverrideIndex();
+						this.col_override[colLetter] = column;
+					}
+					this.data[colLetter + "'" + flip(this.row_override)[rowID]] = data[rowID][column];
+				}
+			}
+		}
+	}
+	this.drawFullSheet();
+}
+
 Grid.prototype.renderData = function() // For all the this.data in the this.data objects, renders it as text
 {
 	for (key in this.data) {
@@ -122,35 +177,6 @@ Grid.prototype.loadDataToGridElement = function(result)
 	if (result !== null) { 
 		this.loadDataObject(result);
 		this.renderData();
-	}
-}
-
-Grid.prototype.loadDataObject = function(result) 
-{
-	if (typeof result != 'object')  { this.data["A'1"] = result; return; } // If data is scalar, place in A'1
-	var columnList = result["32"];
-	this.data = {};
-	var rows = {};  
-	rows = result["33"];
-	var realrows = []
-	delete rows['clone'];
-	for (var row in rows) {								// go through each row of the data
-		if (rows.hasOwnProperty(row)) {
-			realrows.push(row);
-		}
-	}
-	for (var i=0; i<realrows.length;i++) {
-		var rowNumber = rows[realrows[i]].label;
-		var realcols = [];
-		for (var col in rows[realrows[i]]) {
-			realcols.push(col);
-		}
-		for (var j=0; j<realcols.length;j++) {
-			var col = realcols[j];
-			if (col != 'label' && col != 'clone') {	//TODO: get rid of toUpperCase()
-				this.data[columnList[col].label.toUpperCase() + rowNumber] = rows[realrows[i]][col];
-			}
-		}
 	}
 }
 
