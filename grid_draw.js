@@ -1,8 +1,9 @@
 
 Grid.prototype.drawGrid = function() 
 {
-	if (this.showQueryRibbon) this.gridTop = this.RowHeight(0);
-	//if (!this.showColHeader) this.gridTop -= this.RowHeight(0);
+//	if (this.showQueryRibbon) this.gridTop = this.RowHeight(0);
+//	if (this.showColHeader) this.gridTop = this.RowHeight(0);
+
 
 	this.context.lineWidth = 1;
 
@@ -10,12 +11,13 @@ Grid.prototype.drawGrid = function()
 	this.context.fillRect(0, this.gridTop, this.width() - this.SCROLLBAR_WIDTH, this.RowHeight(0)+2);		// Column Header
 
 	this.context.fillStyle = NEAR_BLUE;
-	this.context.fillRect(0,  this.RowHeight(0) + this.QUERY_BAR_HEIGHT - (this.showQueryRibbon?7:0), this.ColWidth(0), this.height() - this.SCROLLBAR_WIDTH + this.RowHeight(0));		// Row Header  if (this.showRowHeader) 
+//	this.context.fillRect(0,  this.RowHeight(0) + this.QUERY_BAR_HEIGHT - (this.showQueryRibbon?7:0), this.ColWidth(0), this.height() - this.SCROLLBAR_WIDTH );		// Row Header  if (this.showRowHeader) 
+	this.context.fillRect(0,  this.QUERY_BAR_HEIGHT - (this.showQueryRibbon?7:0), this.ColWidth(0), this.height());		// Row Header  if (this.showRowHeader) 
 
 	this.drawColumns();						// Draw columns
 	this.drawRows();							// Draw rows
 	
-	if (this.showQueryRibbon) this.drawFunctionSlider("#");		// Function image
+//	if (this.showQueryRibbon) this.drawFunctionSlider("#");		// Function image
 	this.context.strokeStyle = DARK_BLUE; this.context.strokeRect(0, this.gridTop, this.width() - this.SCROLLBAR_WIDTH, this.RowHeight(0) + 1);		// Line under Query Bar
 	this.context.fillStyle = "white"; this.context.fillRect(0, this.RowHeight(0) + this.QUERY_BAR_HEIGHT + 2 - (this.showQueryRibbon?7:0), this.ColWidth(0), 1);	// Top white line on rows
 }
@@ -54,10 +56,10 @@ Grid.prototype.drawRangeFill = function(left, top, width, height)
 		this.context.fillStyle = OFF_WHITE; 
 		if (this.propertyBox) { 
 			this.context.fillStyle = CORDON_BLUE; 
-			this.context.fillRect(left+2, this.RowHeight(0) + this.gridTop+2, width-2, this.height() - this.SCROLLBAR_WIDTH - this.H_SCROLLBAR_OFFSET-2);
+			this.context.fillRect(left+2, this.RowHeight(0) + this.gridTop+2, width-2, this.columnHeight() - this.SCROLLBAR_WIDTH - 2);
 			this.context.fillStyle = "#fbfbfb"; 
 		}
-		if (this.selection.row == 0) { top = this.RowHeight(0) + this.gridTop; height = this.height() - this.SCROLLBAR_WIDTH - this.H_SCROLLBAR_OFFSET; }
+		if (this.selection.row == 0) { top = this.RowHeight(0) + this.gridTop; height = this.columnHeight() - this.SCROLLBAR_WIDTH ; }
 		if (this.selection.col == 0) { left = this.ColWidth(0); width = this.width() - this.SCROLLBAR_WIDTH; }
 		this.context.fillRect(left+2, top+2, width-3, height-3);
 		this.drawRangeFillLines(left, top, width, height);
@@ -121,6 +123,10 @@ Grid.prototype.drawSmartBox = function(left, top, width, height)
 	}
 }
 
+Grid.prototype.columnHeight = function()
+{
+	return this.height() -(this.showHScrollbar?this.H_SCROLLBAR_OFFSET:0);
+}
 
 Grid.prototype.drawColumns = function() 
 {
@@ -129,7 +135,7 @@ Grid.prototype.drawColumns = function()
 	
 	// Left Line of A'1
 	this.context.fillStyle = HIGHLIGHT;  this.context.fillRect(this.ColWidth(0), this.gridTop+1, 1, this.RowHeight(0));
-	this.context.fillStyle = LIGHT_BLUE; this.context.fillRect(this.ColWidth(0), this.RowHeight(0) + this.gridTop, 1, this.height() - this.H_SCROLLBAR_OFFSET);
+	this.context.fillStyle = LIGHT_BLUE; this.context.fillRect(this.ColWidth(0), this.RowHeight(0) + this.gridTop, 1, this.columnHeight());
 
 	for (var c = this.scroll.left; colWidthTotal <= (this.width()); c++) {
 		this.context.fillStyle = HIGHLIGHT;
@@ -145,7 +151,7 @@ Grid.prototype.drawColumns = function()
 		}
 		this.context.fillRect(colWidthTotal + this.ColWidth(c) + this.ColWidth(0), this.gridTop, 1, this.RowHeight(0)+2);
 		this.context.fillStyle = LIGHT_BLUE;
-		this.context.fillRect(colWidthTotal + this.ColWidth(c) + this.ColWidth(0), this.RowHeight(0) + this.gridTop+2, 1, this.height() - this.H_SCROLLBAR_OFFSET);
+		this.context.fillRect(colWidthTotal + this.ColWidth(c) + this.ColWidth(0), this.RowHeight(0) + this.gridTop+2, 1, this.columnHeight());
 
 		if (isSelected) {
 			this.context.fillStyle = DEEP_BLUE;
@@ -164,7 +170,7 @@ Grid.prototype.drawRows = function()
 	var x = false;
 	var rowHeightTotal = this.gridTop + 1;
 	
-	for (var r = this.scroll.top; rowHeightTotal < (this.height() - this.H_SCROLLBAR_OFFSET); r++) {
+	for (var r = this.scroll.top; rowHeightTotal < (this.columnHeight()); r++) {
 		this.context.fillStyle = LIGHT_BLUE;
 		this.context.fillRect(0, rowHeightTotal + this.RowHeight(0), this.width() - this.SCROLLBAR_WIDTH, 1);
 
@@ -187,15 +193,16 @@ Grid.prototype.drawRows = function()
 }
 Grid.prototype.drawFunctionSlider = function(label) 
 {
+return;
 	var y = 0;
 	var x = this.functionSliderPosition;
 	
 	if (x < this.functionSliderLimit.min) x = this.functionSliderLimit.min;
 	if (x > (this.width() - this.functionSliderLimit.max)) x = this.width() - this.functionSliderLimit.max;
 
-	selCtrl.style.width = (x - 18) + "px";
-	queryCtrl.style.left = x + 55 + "px";
-	queryCtrl.style.width = 734 - x + "px";
+//	selCtrl.style.width = (x - 18) + "px";
+//	queryCtrl.style.left = x + 55 + "px";
+//	queryCtrl.style.width = 734 - x + "px";
 	this.rangeBox = x;
 
 	var grad3 = this.context.createLinearGradient(0, 0, 0, 40);

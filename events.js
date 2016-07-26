@@ -72,6 +72,11 @@ Grid.prototype.mouseWheel = function(ev) { }
 
 Grid.prototype.mouseWheelGecko = function(ev) { }
 
+function mouseUpDown(ev){
+	this.mousedown=ev.data.mousedown;
+	alert(this.mousedown + this);
+}
+
 // KEYBOARD EVENTS
 function query_keypress(ev) {
 	if (resolveKeyEvent(ev) == 13) { runQuery($(this).val());  maingrid.focus(); }

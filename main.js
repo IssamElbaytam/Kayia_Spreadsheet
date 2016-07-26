@@ -1,7 +1,8 @@
 var gridInEdit;		// Holds the selected grid 
 //var grids = [];
 var grids = {};
-var queryCtrl, selCtrl, ieditor;
+var gssSolverContext={};
+var queryCtrl, selCtrl, functionSliderCtrl, ieditor;
 var editorType = 'grid';
 var toolbar_grid = { "new" : {left:144, type:"button"} ,
 				"fontface" : {left:170, width:94, type:"custom"} ,
@@ -36,10 +37,11 @@ var toolbar_vector = { "new" : {left:144, type:"button"} ,
 			    "template" : {left:780, type:"button"} };
 var toolbar = toolbar_grid;
 
-function load() {
+function loadKayia() {
 	//document.designMode = 'on';
 	queryCtrl = document.getElementById("query"); 
 	selCtrl = document.getElementById("selector"); 
+	functionSliderCtrl = document.getElementById("functionslider"); 
 	ieditor = document.getElementById("ieditor");
 
 	if (document.getElementById("header") == null) { 
@@ -56,30 +58,50 @@ function load() {
 	selCtrl.addEventListener('focus',  query_focus, false);		// Attach the focus event listener
 	queryCtrl.addEventListener('keydown',  query_keypress, false);	// Attach the keypress event listener
 	queryCtrl.addEventListener('focus',  query_focus, false);		// Attach the focus event listener
+	functionSliderCtrl.addEventListener('mousedown',  function(){document.movingelement=this;}, false);
+	document.addEventListener('mouseup',  function(){document.movingelement=0;}, false);
+//	functionSliderCtrl.addEventListener('mouseleave',  function(){this.mousedown=0;}, false);
+	document.addEventListener(
+		'mousemove',  
+		function(ev){
+			if(this.movingelement && this.movingelement == functionSliderCtrl){
+				window.engine.solve({cxfs:ev.x});
+//				this.movingelementx.left=cxfs
+			}
+//			this.left=ev.x;
+//			window.engine.solve({cxfs:ev.x});
+		}, 
+		false);
+//	$("#functionslider")
+//		.bind("mousedown", {mouseisdown: 1}, mouseUpDown)
+//		.bind("mouseup", {mouseisdown: 0}, mouseUpDown)
+//		.bind('mousemove',{},function(ev){if(!this.mouseisdown){return;};this.left=ev.x});
+	
 	document.addEventListener('keydown',  keypress, false);		// Attach the keypress event listener
 	
 	selLeft = window.innerWidth - document.getElementById("maingrid").offsetLeft;
-	
-	grids.maingrid = new Grid(null, document.getElementById("maingrid"), null, null, null,
-		/* Width */  function()  { return window.innerWidth - this.left(); }, 
-					{"project": "", "showQueryRibbon": true, "selectionLocation": {"left": selLeft, "top": 18}} );		//, "col_override" : { "B" : "Name" }
+	document.getElementById("vector").style.display='none';
+	grids.maingrid = new Grid(null, document.getElementById("maingrid"), null, null, null, null,
+					{"project": "", "showQueryRibbon": false, "selectionLocation": {"left": selLeft, "top": 18}} );		//, "col_override" : { "B" : "Name" }
 	
 	grids.kidgrid = new Grid(queryCtrl.value + '', document.getElementById("kidgrid"), 
-		/* Top */ function()  { return 52; },
-		/* Left */  function()  { return window.innerWidth - 300; }, 
-		/* Height */ function()  {return window.innerHeight - 152; },
-		/* Width */  function()  { return 300; }, {} );
+		null, null, null, null,{});
+//		/* Top */ function()  { return 52; },
+//		/* Left */  function()  { return window.innerWidth - 300; }, 
+//		/* Height */ function()  {return window.innerHeight - 152; },
+//		/* Width */  function()  { return 300; }, {} );
 
-	grids.propbox = new Grid(queryCtrl.value + '', document.getElementById("propbox"),
-		/* Top */ function()  {return window.innerHeight - 152; },
-		/* Left */  function()  { return window.innerWidth - 300; }, 
-		/* Height */ function()  {return 98; },
-		/* Width */  function()  { return 300; }, 
+	grids.propbox = new Grid(queryCtrl.value + '', document.getElementById("propbox"), 
+		null, null, null, null,
+//		/* Top */ function()  {return window.innerHeight - 152; },
+//		/* Left */  function()  { return window.innerWidth - 300; }, 
+//		/* Height */ function()  {return 98; },
+//		/* Width */  function()  { return 300; }, 
 		{"showBlueDot": false, "showColHeader": false, "showRowHeader": false, "showHScrollbar": false, "propertyBox": true, 
 		"colWidths":{"1":120, "2":155}, "data" : {"A'1": "Name", "A'2":"Alignment","A'3":"Border", "A'4":"Font"} } );
 }
 
-window.onresize = load;
+window.onresize = loadKayia;
 
 
 // ======== FOCUS FIX ===========

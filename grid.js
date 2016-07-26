@@ -1,15 +1,16 @@
 function Grid(query, gridElement, top, left, height, width, gridOptions) {		
-
 	// Load positioning
+	gridElement.height = gridElement.clientHeight;
+	gridElement.width= gridElement.clientWidth;
 	if (top == null)  this.top  = function() { return gridElement.offsetTop; };  else this.top = top; 
 	if (left == null) this.left = function() { return gridElement.offsetLeft; }; else this.left = left; 
-	if (height == null) this.height = function() { return window.innerHeight - this.top(); }; else this.height = height;
-	this.width = width;
+	if (height == null) this.height = function() { return gridElement.height; }; else this.height = height;
+	if (width == null)  this.width  = function() { return gridElement.width;  }; else this.width  = width ;
 
 	// Load Grid Options with defaults
 	if (gridOptions.selectionLocation === undefined) this.selectionLocation = {}; 	else this.selectionLocation = gridOptions.selectionLocation;
 	if (gridOptions.showQueryRibbon === undefined) 	this.showQueryRibbon = false; 	else this.showQueryRibbon = gridOptions.showQueryRibbon;
-	if (gridOptions.blueDot === undefined) 			this.blueDot = true; 			else this.blueDot = gridOptions.showBlueDot;				// Show blue dot in bottom right?
+	if (gridOptions.showBlueDot === undefined) 			this.blueDot = true; 			else this.blueDot = gridOptions.showBlueDot;				// Show blue dot in bottom right?
 	if (gridOptions.showColHeader === undefined) 	this.showColHeader = true; 		else this.showColHeader = gridOptions.showColHeader;
 	if (gridOptions.showRowHeader === undefined) 	this.showRowHeader = true; 		else this.showRowHeader = gridOptions.showRowHeader;
 	if (gridOptions.showVScrollbar === undefined) 	this.showVScrollbar = true; 	else this.showVScrollbar = gridOptions.showVScrollbar;
@@ -52,10 +53,10 @@ function Grid(query, gridElement, top, left, height, width, gridOptions) {
 
 	if (gridElement.getContext) {
 		this.context = gridElement.getContext("2d");
-		if (document.getElementById("header") != null) drawHeader(false, true);
+//		if (document.getElementById("header") != null) drawHeader(false, true);
 		if (location.hash.length > 1) runQuery();
-		this.context.canvas.width  = this.width();
-		this.context.canvas.height = this.height();
+//		this.context.canvas.width  = this.width();
+//		this.context.canvas.height = this.height();
 		if (this.propertyBox) { this.selection.col = 1; this.selection.row = 1; }
 		this.drawFullSheet();
 	}
