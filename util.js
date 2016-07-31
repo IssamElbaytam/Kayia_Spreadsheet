@@ -23,6 +23,12 @@ function columnCode2(colNumber, override) {	// Given 65 returns AB
 	return result;
 }
 
+function rowCode2(rowNumber, override) {	// Given 65 returns AB
+	var result = rowCode(rowNumber);
+	if (override[result]) return override[result];
+	return result;
+}
+
 function columnCode(colNumber)
   {
 	var dividend = colNumber;
@@ -37,6 +43,11 @@ function columnCode(colNumber)
 		dividend = Math.floor((dividend - modulo) / 26);
 	} 
 	return columnName;
+}
+
+function rowCode(rowNumber)
+  {
+	return rowNumber;
 }
 
 function reverseColumnCode2(reversedCode, override){

@@ -17,7 +17,6 @@ Grid.prototype.initializeScrollbars = function()
 	this.SCROLL_SPEED = 15;  // Lower is faster
 	this.SCROLL_INITIAL_DELAY = 250;  // When you press an arrow, it does one click and then waits to see if it should repeat
 
-	this.H_SCROLLBAR_OFFSET = 40;
 	this.SCROLL_SLIDER_LENGTH = 30;
 
 	this.scrollVLimit = { "min" : this.slideV, "max" : (this.SCROLLBAR_WIDTH * 2) + this.SCROLL_SLIDER_LENGTH + 1};
