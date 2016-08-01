@@ -1,23 +1,21 @@
 
 Grid.prototype.drawGrid = function() 
 {
-	if (this.showQueryRibbon) this.gridTop = this.RowHeight(0);
-	//if (!this.showColHeader) this.gridTop -= this.RowHeight(0);
 
 	this.context.lineWidth = 1;
 
 	this.context.fillStyle = this.colHeaderGradient("white", HIGH_BLUE, LIGHT_BLUE); 	// Headers  if (this.showColHeader) 
-	this.context.fillRect(0, this.gridTop, this.width() - this.SCROLLBAR_WIDTH, this.RowHeight(0)+2);		// Column Header
+	this.context.fillRect(0, 0, this.rowWidth(), this.RowHeight(0));		// Column Header
 
 	this.context.fillStyle = NEAR_BLUE;
-	this.context.fillRect(0,  this.RowHeight(0) + this.QUERY_BAR_HEIGHT - (this.showQueryRibbon?7:0), this.ColWidth(0), this.height() - this.SCROLLBAR_WIDTH + this.RowHeight(0));		// Row Header  if (this.showRowHeader) 
+	this.context.fillRect(0,  this.QUERY_BAR_HEIGHT - (this.showQueryRibbon?7:0), this.ColWidth(0), this.height());		// Row Header  if (this.showRowHeader) 
 
 	this.drawColumns();						// Draw columns
 	this.drawRows();							// Draw rows
 	
-	if (this.showQueryRibbon) this.drawFunctionSlider("#");		// Function image
-	this.context.strokeStyle = DARK_BLUE; this.context.strokeRect(0, this.gridTop, this.width() - this.SCROLLBAR_WIDTH, this.RowHeight(0) + 1);		// Line under Query Bar
-	this.context.fillStyle = "white"; this.context.fillRect(0, this.RowHeight(0) + this.QUERY_BAR_HEIGHT + 2 - (this.showQueryRibbon?7:0), this.ColWidth(0), 1);	// Top white line on rows
+//	if (this.showQueryRibbon) this.drawFunctionSlider("#");		// Function image
+//	this.context.strokeStyle = DARK_BLUE; this.context.strokeRect(0, 0, this.rowWidth(), this.RowHeight(0) );		// Line under Query Bar
+//	this.context.fillStyle = "white"; this.context.fillRect(0, this.RowHeight(0) + this.QUERY_BAR_HEIGHT - (this.showQueryRibbon?7:0), this.ColWidth(0), 1);	// Top white line on rows
 }
 
 Grid.prototype.drawFullSheet = function() 
@@ -32,7 +30,17 @@ Grid.prototype.drawFullSheet = function()
 	this.setRangeBox();
 
 	// Draw selection
-	if ((selectionAbsEndRow(this.selection) == 0 || selectionAbsEndRow(this.selection) >= this.scroll.top) && (selectionAbsEndCol(this.selection) == 0 || selectionAbsEndCol(this.selection) >= this.scroll.left) && !(selectionAbsEndCol(this.selection) == 0 && selectionAbsEndRow(this.selection) == 0)) {
+	if (
+		(selectionAbsEndRow(this.selection) == 0 || selectionAbsEndRow(this.selection) >= this.scroll.top) 
+		&& 
+		(selectionAbsEndCol(this.selection) == 0 || selectionAbsEndCol(this.selection) >= this.scroll.left) 
+		&& 
+		!(
+			selectionAbsEndCol(this.selection) == 0 
+			&& 
+			selectionAbsEndRow(this.selection) == 0
+		)
+	) {
 		this.drawRangeFill(left, top, width, height);
 		if (!this.propertyBox) this.drawBlackOutline(left, top, width, height);
 		if (!this.propertyBox) this.drawSmartBox(left, top, width, height);
@@ -54,12 +62,12 @@ Grid.prototype.drawRangeFill = function(left, top, width, height)
 		this.context.fillStyle = OFF_WHITE; 
 		if (this.propertyBox) { 
 			this.context.fillStyle = CORDON_BLUE; 
-			this.context.fillRect(left+2, this.RowHeight(0) + this.gridTop+2, width-2, this.height() - this.SCROLLBAR_WIDTH - this.H_SCROLLBAR_OFFSET-2);
+			this.context.fillRect(left, this.RowHeight(0) + 0, width, this.columnHeight());
 			this.context.fillStyle = "#fbfbfb"; 
 		}
-		if (this.selection.row == 0) { top = this.RowHeight(0) + this.gridTop; height = this.height() - this.SCROLLBAR_WIDTH - this.H_SCROLLBAR_OFFSET; }
-		if (this.selection.col == 0) { left = this.ColWidth(0); width = this.width() - this.SCROLLBAR_WIDTH; }
-		this.context.fillRect(left+2, top+2, width-3, height-3);
+		if (this.selection.row == 0) {  height = this.columnHeight(); }
+		if (this.selection.col == 0) {  width = this.rowWidth(); }
+		this.context.fillRect(left, top, width, height);
 		this.drawRangeFillLines(left, top, width, height);
 	}
 }
@@ -90,7 +98,7 @@ Grid.prototype.drawBlackOutline = function(left, top, width, height)
 {
 	this.context.strokeStyle = "black";
 	this.context.lineWidth = 2;
-	left++; top++;
+//	left++; top++;
 	if (this.selection.col > 0 && this.selection.row > 0) { 
 		this.context.strokeRect(left, top, width, height);
 	}
@@ -110,8 +118,10 @@ Grid.prototype.drawBlackOutline = function(left, top, width, height)
 
 Grid.prototype.drawSmartBox = function(left, top, width, height) 
 {
-	var x = left + width + 1;  
-	var y = top + height + 1;  
+//	var x = left + width + 1;  
+//	var y = top + height + 1;  
+	var x = left + width ;  
+	var y = top + height ;  
 
 	if (this.selection.col > 0 && this.selection.row > 0) { 
 		this.context.fillStyle = "white";
@@ -121,81 +131,167 @@ Grid.prototype.drawSmartBox = function(left, top, width, height)
 	}
 }
 
+Grid.prototype.columnHeight = function()
+{
+	return this.height() -(this.showHScrollbar?this.SCROLLBAR_WIDTH:0);
+}
+
+Grid.prototype.rowWidth= function()
+{
+	return this.width() -(this.showVScrollbar?this.SCROLLBAR_WIDTH:0);
+}
 
 Grid.prototype.drawColumns = function() 
 {
-	var colWidthTotal = 0;
+	var colWidthTotal = this.ColWidth(0);
 	var isSelected = false;
 	
 	// Left Line of A'1
-	this.context.fillStyle = HIGHLIGHT;  this.context.fillRect(this.ColWidth(0), this.gridTop+1, 1, this.RowHeight(0));
-	this.context.fillStyle = LIGHT_BLUE; this.context.fillRect(this.ColWidth(0), this.RowHeight(0) + this.gridTop, 1, this.height() - this.H_SCROLLBAR_OFFSET);
+	this.context.fillStyle = HIGHLIGHT;  this.context.fillRect(colWidthTotal, 0, 1, this.RowHeight(0));
+	this.context.fillStyle = LIGHT_BLUE; this.context.fillRect(colWidthTotal, this.RowHeight(0) , 1, this.columnHeight());
 
 	for (var c = this.scroll.left; colWidthTotal <= (this.width()); c++) {
 		this.context.fillStyle = HIGHLIGHT;
-		if (this.selection != undefined) {
-			if ((this.selection.endCol === undefined && c == this.selection.col) || (this.selection.endCol && (c >= this.selection.col && c <= this.selection.endCol) || (this.selection.col > this.selection.endCol && c <= this.selection.col && c >= this.selection.endCol))) {
-				isSelected = true;
-				this.context.fillStyle = this.colHeaderGradient(HIGH_BLUE, NEAR_BLUE, HIGHLIGHT);		// Headers
-				this.context.fillRect(colWidthTotal + this.ColWidth(0), this.gridTop, this.ColWidth(c), this.RowHeight(0)+1);		// Column Header
-				this.context.fillStyle = DEEP_BLUE;
-				this.context.fillRect(colWidthTotal + this.ColWidth(0), this.gridTop+1, 1, this.RowHeight(0)+1);
-				this.context.fillStyle = HIGHLIGHT;
-			}
+		if (
+			this.selection != undefined 
+			&&
+			(
+				this.selection.endCol === undefined 
+				&&
+				 c == this.selection.col
+			) 
+			|| 
+			(
+				this.selection.endCol 	
+				&& 	
+				(
+					c >= this.selection.col 
+					&& 	
+					c <= this.selection.endCol
+				) 
+				|| 
+				(
+					this.selection.col > this.selection.endCol 
+					&& 	
+					c <= this.selection.col 
+					&& 
+					c >= this.selection.endCol
+				)
+			)
+		) {
+			isSelected = true;
+			this.context.fillStyle = this.colHeaderGradient(HIGH_BLUE, NEAR_BLUE, HIGHLIGHT);		// Headers
+			this.context.fillRect(colWidthTotal , 0, this.ColWidth(c), this.RowHeight(0));		// Column Header
+			this.context.fillStyle = DEEP_BLUE;
+			this.context.fillRect(colWidthTotal , 0, 1, this.RowHeight(0));
+			this.context.fillStyle = HIGHLIGHT;
 		}
-		this.context.fillRect(colWidthTotal + this.ColWidth(c) + this.ColWidth(0), this.gridTop, 1, this.RowHeight(0)+2);
+		this.context.fillRect(colWidthTotal + this.ColWidth(c) , 0, 1, this.RowHeight(0));
 		this.context.fillStyle = LIGHT_BLUE;
-		this.context.fillRect(colWidthTotal + this.ColWidth(c) + this.ColWidth(0), this.RowHeight(0) + this.gridTop+2, 1, this.height() - this.H_SCROLLBAR_OFFSET);
+		this.context.fillRect(colWidthTotal + this.ColWidth(c) , this.RowHeight(0), 1, this.columnHeight());
 
 		if (isSelected) {
 			this.context.fillStyle = DEEP_BLUE;
-			this.context.fillRect(colWidthTotal + this.ColWidth(0) + this.ColWidth(c), this.gridTop+1, 1, this.RowHeight(0)+1);		
+			this.context.fillRect(colWidthTotal + this.ColWidth(c), 0+0, 1, this.RowHeight(0));		
 		}
 		
+		this.context.save();
+		this.context.beginPath();
 		SetTextStyle(this.context, {}); 	// Text header
-		if (this.showColHeader) this.context.fillText(columnCode2(c, this.col_override), colWidthTotal  + this.ColWidth(0) + (this.ColWidth(c)/2), this.gridTop + this.RowHeight(0) - 6);  
-		colWidthTotal += this.ColWidth(c);
+		var left =colWidthTotal; 
+		var top = this.placeRow(0);
+		var row_height = this.RowHeight(0);
+		var col_width = this.ColWidth(c);
+		this.context.rect(left, top, col_width, row_height);
+		this.context.clip();
+		if (this.showColHeader) this.context.fillText(columnCode2(c, this.col_override), colWidthTotal  + col_width/2, row_height - 6);  // magic '6' is vert center text
+		this.context.restore();
+		colWidthTotal += col_width;
 		isSelected = false;
 	}
 }
 
 Grid.prototype.drawRows = function() 
 {
-	var x = false;
-	var rowHeightTotal = this.gridTop + 1;
+	var isSelected = false;
+	var rowHeightTotal = this.RowHeight(0);
+
+        // Top Line of A'1
+        this.context.fillStyle = HIGHLIGHT;  this.context.fillRect(0, rowHeightTotal, this.ColWidth(0), 1);
+        this.context.fillStyle = LIGHT_BLUE; this.context.fillRect( this.ColWidth(0), rowHeightTotal, this.rowWidth(), 1);
 	
-	for (var r = this.scroll.top; rowHeightTotal < (this.height() - this.H_SCROLLBAR_OFFSET); r++) {
-		this.context.fillStyle = LIGHT_BLUE;
-		this.context.fillRect(0, rowHeightTotal + this.RowHeight(0), this.width() - this.SCROLLBAR_WIDTH, 1);
-
-		this.context.fillStyle = "white";
-		if (x) { this.context.fillStyle = DEEP_BLUE; x=false; } // Shit.
-		if (this.selection != undefined) {
-			if ((this.selection.endRow === undefined && r == this.selection.row) || (this.selection.endRow && (r >= this.selection.row && r <= this.selection.endRow) || (this.selection.row > this.selection.endRow && r <= this.selection.row && r >= this.selection.endRow))) {
-				this.context.fillStyle = GLOW_BLUE;
-				this.context.fillRect(0, rowHeightTotal + this.RowHeight(0) + 1, this.ColWidth(0), this.RowHeight(r));
-				this.context.fillStyle = DEEP_BLUE;
-				x = true;
-			} 
+	for (var r = this.scroll.top; rowHeightTotal < (this.columnHeight()); r++) {
+		this.context.fillStyle = HIGHLIGHT;
+		if (
+			this.selection != undefined 
+			&&
+			(
+				this.selection.endRow === undefined 
+				&& 
+				r == this.selection.row
+			) 
+			|| 
+			(	
+				this.selection.endRow 
+				&& 
+				(
+					r >= this.selection.row 
+					&& 
+					r <= this.selection.endRow
+				) 
+				|| 
+				(	
+					this.selection.row > this.selection.endRow 
+					&& 
+					r <= this.selection.row 
+					&& 
+					r >= this.selection.endRow
+				)
+			)
+		) {
+			isSelected = true;
+                        this.context.fillStyle = this.colHeaderGradient(HIGH_BLUE, NEAR_BLUE, HIGHLIGHT);               // Row 
+                        this.context.fillRect(0, rowHeightTotal, this.ColWidth(0), this.RowHeight(r));          // Row Header
+                        this.context.fillStyle = DEEP_BLUE;
+                        this.context.fillRect(0, rowHeightTotal, this.ColWidth(0), 1);
+                        this.context.fillStyle = HIGHLIGHT;
 		}
-		this.context.fillRect(0, rowHeightTotal + this.RowHeight(r) + 2, this.ColWidth(0), 1);	// if (this.showRowHeader) 
-
-		SetTextStyle(this.context, {}); 	// Text header
-		if (this.showRowHeader) this.context.fillText(r, this.ColWidth(0)/2, rowHeightTotal + this.RowHeight(0) + this.RowHeight(r) - (this.RowHeight(r)*.28) + (this.showQueryRibbon?1:0));
 		rowHeightTotal += this.RowHeight(r);
+                this.context.fillRect(0, rowHeightTotal , this.ColWidth(0), 1);
+                this.context.fillStyle = LIGHT_BLUE;
+                this.context.fillRect(this.ColWidth(0), rowHeightTotal , this.rowWidth(), 1);
+
+                if (isSelected) {
+                        this.context.fillStyle = DEEP_BLUE;
+                        this.context.fillRect(0, rowHeightTotal, this.ColWidth(0), 1);
+                }
+
+                this.context.save();
+                this.context.beginPath();
+                SetTextStyle(this.context, {});         // Text header
+                var left = this.placeColumn(0);
+                var row_height = this.RowHeight(r);
+                var top = rowHeightTotal-row_height;;
+                var col_width = this.ColWidth(0);
+                this.context.rect(left, top, col_width, row_height);
+                this.context.clip();
+                if (this.showRowHeader) this.context.fillText(rowCode2(r, this.row_override), this.placeColumnData(0), this.placeRowData(r));  
+                this.context.restore();
+                isSelected = false;
 	}
 }
 Grid.prototype.drawFunctionSlider = function(label) 
 {
+return;
 	var y = 0;
 	var x = this.functionSliderPosition;
 	
 	if (x < this.functionSliderLimit.min) x = this.functionSliderLimit.min;
 	if (x > (this.width() - this.functionSliderLimit.max)) x = this.width() - this.functionSliderLimit.max;
 
-	selCtrl.style.width = (x - 18) + "px";
-	queryCtrl.style.left = x + 55 + "px";
-	queryCtrl.style.width = 734 - x + "px";
+//	selCtrl.style.width = (x - 18) + "px";
+//	queryCtrl.style.left = x + 55 + "px";
+//	queryCtrl.style.width = 734 - x + "px";
 	this.rangeBox = x;
 
 	var grad3 = this.context.createLinearGradient(0, 0, 0, 40);
@@ -267,7 +363,7 @@ Grid.prototype.setRangeBox = function()
 
 Grid.prototype.colHeaderGradient = function(lightColor, midColor, darkColor) 
 {
-	var grad = this.context.createLinearGradient(0, this.gridTop, 0, this.RowHeight(0) + this.QUERY_BAR_HEIGHT -4);
+	var grad = this.context.createLinearGradient(0, 0, 0, this.RowHeight(0) + this.QUERY_BAR_HEIGHT -4);
 	grad.addColorStop(0, lightColor); grad.addColorStop(.1, midColor); grad.addColorStop(1, darkColor);
 	return grad;
 }
@@ -283,7 +379,7 @@ Grid.prototype.drawQueryDropdownButton = function(left, top, width, height)
 	var grad = this.context.createLinearGradient(left, 0, this.width(), 0); grad.addColorStop(0, "#fafafa"); grad.addColorStop(.2, HIGH_BLUE); grad.addColorStop(1, LIGHT_BLUE);
 	this.context.fillStyle = grad; 
 	this.context.fillRect(left, top, width, height);		// Vertical scrollbar
-	this.context.lineWidth = 1; this.context.strokeStyle = GRAY_A;	this.context.strokeRect(this.width() - this.SCROLLBAR_WIDTH, 3, this.SCROLLBAR_WIDTH, height);					
+	this.context.lineWidth = 1; this.context.strokeStyle = GRAY_A;	this.context.strokeRect(this.rowWidth(), 3, this.SCROLLBAR_WIDTH, height);					
 
 	var COMBO_TOP = top + 5.5; var COMBO_WIDTH = 4;
 	this.context.lineWidth = 1;

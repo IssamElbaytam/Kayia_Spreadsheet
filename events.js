@@ -12,9 +12,9 @@ Grid.prototype.loadEvents = function(grid)
 Grid.prototype.mouseDown = function(ev) 
 {
 	var event = resolveEvent(ev);
+	if (gridInEdit) gridInEdit.finishEdit();
 	var obj = grids[this.id];
 	gridInEdit = obj;
-	if (obj.inEdit) obj.finishEdit();
 	obj.inSelection = false;
 	obj.inScroll = obj.hitScrollObject(ev._x, ev._y);
 	if (obj.inScroll > 0) { 
@@ -23,7 +23,7 @@ Grid.prototype.mouseDown = function(ev)
 	} else {
 		obj.selectCell(ev._x, ev._y);
 		if (obj.canColResize(ev._x, ev._y)) obj.colBeingResized = obj.getSelectedColumn(ev._x) - 1; 
-		if (obj.canRowResize(ev._x, ev._y)) obj.rowBeingResized = obj.getSelectedRow(ev._y); 
+		if (obj.canRowResize(ev._x, ev._y)) obj.rowBeingResized = obj.getSelectedRow(ev._y) -1 ; 
 		if (obj.colBeingResized < 0 && obj.rowBeingResized < 0) obj.drawFullSheet(); else obj.inSelection = false;
 	}
 }
@@ -71,6 +71,11 @@ Grid.prototype.mouseDoubleClick = function(ev)
 Grid.prototype.mouseWheel = function(ev) { }
 
 Grid.prototype.mouseWheelGecko = function(ev) { }
+
+function mouseUpDown(ev){
+	this.mousedown=ev.data.mousedown;
+	alert(this.mousedown + this);
+}
 
 // KEYBOARD EVENTS
 function query_keypress(ev) {

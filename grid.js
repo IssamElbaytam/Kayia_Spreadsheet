@@ -1,21 +1,23 @@
 function Grid(query, gridElement, top, left, height, width, gridOptions) {		
-
 	// Load positioning
+	gridElement.height = gridElement.clientHeight;
+	gridElement.width= gridElement.clientWidth;
 	if (top == null)  this.top  = function() { return gridElement.offsetTop; };  else this.top = top; 
 	if (left == null) this.left = function() { return gridElement.offsetLeft; }; else this.left = left; 
-	if (height == null) this.height = function() { return window.innerHeight - this.top(); }; else this.height = height;
-	this.width = width;
+	if (height == null) this.height = function() { return gridElement.height; }; else this.height = height;
+	if (width == null)  this.width  = function() { return gridElement.width;  }; else this.width  = width ;
 
 	// Load Grid Options with defaults
 	if (gridOptions.selectionLocation === undefined) this.selectionLocation = {}; 	else this.selectionLocation = gridOptions.selectionLocation;
 	if (gridOptions.showQueryRibbon === undefined) 	this.showQueryRibbon = false; 	else this.showQueryRibbon = gridOptions.showQueryRibbon;
-	if (gridOptions.blueDot === undefined) 			this.blueDot = true; 			else this.blueDot = gridOptions.showBlueDot;				// Show blue dot in bottom right?
+	if (gridOptions.showBlueDot === undefined) 			this.blueDot = true; 			else this.blueDot = gridOptions.showBlueDot;				// Show blue dot in bottom right?
 	if (gridOptions.showColHeader === undefined) 	this.showColHeader = true; 		else this.showColHeader = gridOptions.showColHeader;
 	if (gridOptions.showRowHeader === undefined) 	this.showRowHeader = true; 		else this.showRowHeader = gridOptions.showRowHeader;
 	if (gridOptions.showVScrollbar === undefined) 	this.showVScrollbar = true; 	else this.showVScrollbar = gridOptions.showVScrollbar;
 	if (gridOptions.showHScrollbar === undefined) 	this.showHScrollbar = true; 	else this.showHScrollbar = gridOptions.showHScrollbar;
 	if (gridOptions.colWidths === undefined)  		this.colWidths = {};  			else this.colWidths  = gridOptions.colWidths;  				// e.g. {"3":120, "6":50};
 	if (gridOptions.rowHeights === undefined) 		this.rowHeights = {}; 			else this.rowHeights = gridOptions.rowHeights; 				// e.g. {"4":27, "8":15};
+	this.DEFAULT_ROW_HEIGHT = 21;
 	if (gridOptions.data === undefined) 				this.data = {}; 			else this.data = gridOptions.data; 	   						// e.g. {"A'1": "HELLO A1", "B'2": "HI B2!", "C'3":"9"};
 	if (gridOptions.project === undefined) 			this.project = ""; 		else this.project = gridOptions.project;					// A unique project code, e.g. za4wF7
 	if (gridOptions.propertyBox === undefined) 	this.propertyBox = false; 			else this.propertyBox = gridOptions.propertyBox;		// Show selection on grid?
@@ -52,10 +54,10 @@ function Grid(query, gridElement, top, left, height, width, gridOptions) {
 
 	if (gridElement.getContext) {
 		this.context = gridElement.getContext("2d");
-		if (document.getElementById("header") != null) drawHeader(false, true);
+//		if (document.getElementById("header") != null) drawHeader(false, true);
 		if (location.hash.length > 1) runQuery();
-		this.context.canvas.width  = this.width();
-		this.context.canvas.height = this.height();
+//		this.context.canvas.width  = this.width();
+//		this.context.canvas.height = this.height();
 		if (this.propertyBox) { this.selection.col = 1; this.selection.row = 1; }
 		this.drawFullSheet();
 	}
@@ -73,12 +75,11 @@ Grid.prototype.ColWidth = function(index)
 
 Grid.prototype.RowHeight = function(index) 
 {
-	var DEFAULT_ROW_HEIGHT = 21;
 	var HEADER_HEIGHT = 23;
 	var HEADER_HEIGHT_STUB = 6;
 	if (index == 0) { if (this.showColHeader) return HEADER_HEIGHT; else return HEADER_HEIGHT_STUB; }
 	if (this.rowHeights[index] > 0) return this.rowHeights[index];
-	return DEFAULT_ROW_HEIGHT;
+	return this.DEFAULT_ROW_HEIGHT;
 }
 
 Grid.prototype.resizeCol = function(x) 
@@ -92,9 +93,8 @@ Grid.prototype.resizeCol = function(x)
 
 Grid.prototype.resizeRow = function(y) 
 {
-	var adjustedY = y - this.gridTop;
 	var q = this.placeRow(this.rowBeingResized) + this.RowHeight(this.rowBeingResized);
-	this.rowHeights[this.rowBeingResized] = this.RowHeight(this.rowBeingResized) + (adjustedY - q) + 20;
+	this.rowHeights[this.rowBeingResized] = this.RowHeight(this.rowBeingResized) + (y - q);
 	this.selection = {};
 	this.resetGrid();
 	this.drawFullSheet();
@@ -116,7 +116,7 @@ Grid.prototype.resetGrid = function() { // Clear the grid
 }
 
 Grid.prototype.selectCell = function(x, y) { 
-	if (this.inEdit) this.gridElement.finishEdit();
+//	if (this.inEdit) this.finishEdit();
 	if (!this.inSelection) {
 		this.selection.col = this.getSelectedColumn(x); 
 		this.selection.row = this.getSelectedRow(y); 
@@ -128,31 +128,48 @@ Grid.prototype.selectCell = function(x, y) {
 
 Grid.prototype.placeColumn = function(col) 
 {
-	var totalWidth = this.ColWidth(0);
-	if (col > 0)
-		for (var i=this.scroll.left; i < col; i++) {
-			totalWidth += this.ColWidth(i);
-		}
-	return totalWidth;
+	if(col){
+		var totalWidth = this.ColWidth(0);
+		if (col > 0)
+			for (var i=this.scroll.left; i < col; i++) {
+				totalWidth += this.ColWidth(i);
+			}
+		return totalWidth;
+	}
+	return 0;
 }
+		
+
 
 Grid.prototype.placeRow = function(row) 
 {
-	var totalHeight = this.gridTop + this.RowHeight(0); //46
-	if (row <= 0) totalHeight = 23;
-	else 
-		for (var i=this.scroll.top; i < row; i++) {
-			totalHeight += this.RowHeight(i);
+	if(row){
+		var totalHeight = this.RowHeight(0); //46
+		if (row > 0){ 
+			for (var i=this.scroll.top; i < row; i++) {
+				totalHeight += this.RowHeight(i);
+			}
 		}
-	
-	return totalHeight +  (this.showQueryRibbon?0:2);
+		return totalHeight;
+	}
+	return 0;
+}
+
+Grid.prototype.placeColumnData= function(col)
+{
+	return this.placeColumn(col)+5; // magic '5' is px offset of data in cell
+}
+
+Grid.prototype.placeRowData = function(row)
+{
+	return this.placeRow(row) + this.DEFAULT_ROW_HEIGHT/1.3;
 }
 
 Grid.prototype.getSelectedColumn = function(x) 
 {
 	var totalWidth = this.ColWidth(0);
-	if (x > this.ColWidth(0)) {
-		for (var i=this.scroll.left; totalWidth < (this.width() - this.SCROLLBAR_WIDTH); i++) {
+	if (x > totalWidth) {
+		for (var i=this.scroll.left; totalWidth < this.width(); i++) {
 			totalWidth += this.ColWidth(i);
 			if (totalWidth > x) return i;
 		}
@@ -162,15 +179,14 @@ Grid.prototype.getSelectedColumn = function(x)
 
 Grid.prototype.getSelectedRow = function(y) 
 {
-	var totalHeight = this.RowHeight(0) - 17;
-	if (y > this.gridTop) {
-		y -= this.gridTop;
+	var totalHeight = this.RowHeight(0);
+	if(y > totalHeight ) {
 		for (var i=this.scroll.top; totalHeight < this.height(); i++) {
 			totalHeight += this.RowHeight(i);
-			if (totalHeight > y) return i-1;
+			if (totalHeight > y) return i;
 		}
 	}
-	return -1;
+	return 0;
 }
 
 function adjustCols(colList) {

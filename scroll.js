@@ -17,7 +17,6 @@ Grid.prototype.initializeScrollbars = function()
 	this.SCROLL_SPEED = 15;  // Lower is faster
 	this.SCROLL_INITIAL_DELAY = 250;  // When you press an arrow, it does one click and then waits to see if it should repeat
 
-	this.H_SCROLLBAR_OFFSET = 40;
 	this.SCROLL_SLIDER_LENGTH = 30;
 
 	this.scrollVLimit = { "min" : this.slideV, "max" : (this.SCROLLBAR_WIDTH * 2) + this.SCROLL_SLIDER_LENGTH + 1};
@@ -38,7 +37,7 @@ Grid.prototype.hitScrollObject = function(x, y)
 {
 	//console.log('x=' + x + ',y=' + y + ',context.canvas.width=' + context.canvas.width + ', height=' + this.height()); //85,4 : 104,20
 	// FUNCTION_SLIDER
-	if (x > this.functionSliderPosition && x < (this.functionSliderPosition + 20) && y > 3 && y < 20) { this.inScrollOffset = x - this.functionSliderPosition; return this.FUNCTION_SLIDER; }		
+//	if (x > this.functionSliderPosition && x < (this.functionSliderPosition + 20) && y > 3 && y < 20) { this.inScrollOffset = x - this.functionSliderPosition; return this.FUNCTION_SLIDER; }		
 
 	// VERTICAL_SLIDER
 	if (x > (this.width() - this.SCROLLBAR_WIDTH) && x <= this.width() && y > this.slideV && y < (this.slideV + this.SCROLL_SLIDER_LENGTH)) { this.ensureSlideV(); this.inScrollOffset = y - this.slideV;  return this.VERTICAL_SLIDER; }		
@@ -165,7 +164,7 @@ Grid.prototype.drawScrollArrow = function(grad, left, top, width, height, upDown
 Grid.prototype.drawVerticalScrollbar = function() 
 {
 	this.context.fillStyle = HIGHLIGHT; 
-	this.context.fillRect(this.width() - this.SCROLLBAR_WIDTH-1, this.RowHeight(0) - 6, this.SCROLLBAR_WIDTH+1, this.height() - (this.SCROLLBAR_WIDTH +(this.blueDot?this.SCROLLBAR_WIDTH:0) + 7));		// Vertical scrollbar
+	this.context.fillRect(this.width() - this.SCROLLBAR_WIDTH-1, this.RowHeight(0) - 6, this.SCROLLBAR_WIDTH+1, this.height() - ((this.showHScrollbar?this.SCROLLBAR_WIDTH:0) +(this.blueDot?this.SCROLLBAR_WIDTH:0) ));		// Vertical scrollbar
 
 	// Combo Button 
 	if (this.showQueryRibbon) this.drawQueryDropdownButton(this.width() - this.SCROLLBAR_WIDTH, 3.5, this.SCROLLBAR_WIDTH+2, this.QUERY_BAR_HEIGHT - 1);
@@ -199,14 +198,15 @@ Grid.prototype.drawVSlider = function()
 
 Grid.prototype.drawHorizontalScrollbar = function() 
 {
-	var grad = this.context.createLinearGradient(this.left(), this.height() - this.SCROLLBAR_WIDTH, this.left(), this.height());	
+//	var grad = this.context.createLinearGradient(this.left(), this.height() - this.SCROLLBAR_WIDTH, this.left(), this.height());	
+	var grad = this.context.createLinearGradient(0, this.height() - this.SCROLLBAR_WIDTH, 0, this.height());	
 	grad.addColorStop(0, "white"); grad.addColorStop(.1, HIGH_BLUE); grad.addColorStop(1, DARK_BLUE);
 	
 	this.context.fillStyle = HIGHLIGHT; 
-	this.context.fillRect(this.left(), this.height()-this.SCROLLBAR_WIDTH - 1, this.width()-this.SCROLLBAR_WIDTH, this.SCROLLBAR_WIDTH+1);		// Horizontal scrollbar	
+	this.context.fillRect(0, this.height()-this.SCROLLBAR_WIDTH - 1, this.width()-this.SCROLLBAR_WIDTH, this.SCROLLBAR_WIDTH+1);		// Horizontal scrollbar	
 
 	// Left Arrow ---------------------------------------------------------------------------------------------------------------------------------------------------
-	this.drawScrollArrow(grad, this.left()+1, this.height() - this.SCROLLBAR_WIDTH, this.SCROLLBAR_WIDTH , this.SCROLLBAR_WIDTH, false, 6, 10, 10)
+	this.drawScrollArrow(grad, 1, this.height() - this.SCROLLBAR_WIDTH, this.SCROLLBAR_WIDTH , this.SCROLLBAR_WIDTH, false, 6, 10, 10)
 	
 	// Right Arrow ---------------------------------------------------------------------------------------------------------------------------------------------------
 	this.drawScrollArrow(grad, this.width() - this.SCROLLBAR_WIDTH - this.SCROLLBAR_WIDTH, this.height() - this.SCROLLBAR_WIDTH, this.SCROLLBAR_WIDTH , this.SCROLLBAR_WIDTH, false, 10, 6, 6)
