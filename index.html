@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+                <meta charset="utf-8">
+                <title>Kayia</title>
+                <link rel="icon" type="image/x-icon" href="favicon.ico" />
+
+<style>
+#header  { position:fixed; top:0; left:0; }
+#selection {text-align:center; border:2; padding:0;}
+#selector {text-align:center; border:2; padding:0; }
+#functionslider {border:2; padding:0; }
+#query {border:2; padding:0; width:105;}
+#maingrid {display:block;}
+#vector   {display:none;}
+#kidgrid  {}
+#propbox  {}
+
+*, *:before, *:after {
+  -moz-box-sizing: border-box; 
+  box-sizing: border-box;
+}
+#ieditor { display:none; border:0; padding:0; position:fixed; font:12px sans-serif; width:65px; height:17px; background-color:white; outline:none; overflow:hidden; white-space:nowrap ; }
+
+#promptr { display:none; }
+
+</style>
+</head>
+<body id="headerBar" onkeypress="keypress();" spellcheck="false" >
+<style type="text/css">
+     html:not(.gss-ready) { opacity: 1; }
+</style>
+<noscript>
+  <style type="text/css"> html:not(.gss-ready) { opacity: 1; }
+  </style>
+</noscript>
+<img id="k2" src="k2.png" /><img id="toolbar" src="toolbar776x35.png" /><img id="userImage" src="userImage.png" /><div id="selection">G'3</div>
+<input id="selector" contenteditable="false" type="text" value="za4wF7" />
+<span id="functionslider"></span> 
+<input id="query" contenteditable="false" type="text" value="" />
+
+<canvas id="maingrid"></canvas>
+<canvas id="vector"></canvas>
+<canvas id="kidgrid"></canvas>
+<canvas id="propbox"></canvas>
+<div id="ieditor" contenteditable="true" ></div>
+<select id="promptr" multiple="multiple"></select>
+
+<style type="text/gss">
+	#selector[height]==35;
+	#selector[width] >=100;
+	#selector[width] == 100 !weak;
+	#selector[width] <= ::window[right] - 100;
+	@h (#k2)(#toolbar)(#userImage)(#selection) in(::window);
+	@h (#selector)(#functionslider)(#query) in(::window); 
+	@v (#k2)(#functionslider)(#maingrid) in(::window);
+	@v (#k2)(#query)(#maingrid) in(::window);
+	@v (#k2)(#selector)(#maingrid) in(::window);
+	@v (#k2)(#selector)(#kidgrid)(#propbox) in(::window);
+	@h (#maingrid)(#kidgrid) in(::window);
+	@h (#maingrid)(#propbox) in(::window);
+	#maingrid[right]==#vector[right];
+	#maingrid[left]==#vector[left];
+	#maingrid[top]==#vector[top];
+	#maingrid[bottom]==#vector[bottom];
+	#maingrid[width]/2 == #kidgrid[width];
+	#propbox[height] == #kidgrid[height]/2;
+	#propbox[bottom] == #maingrid[bottom];
+	#propbox[right] == #kidgrid[right];
+	#propbox[height] >= 64;
+	#kidgrid[height] >= 64;
+	#functionslider{
+		width: == 50;
+	}
+	#functionslider[left] == $cxfs - #functionslider[width]/2 !weak;
+	#selector[width] > 100 !strong;
+	#query[width] > 100 !require;
+	#k2,#toolbar,#userImage {
+	  height: == &[intrinsic-height] ;
+	  width: == &[intrinsic-width] ;
+	}
+	#k2,#toolbar,#userImage,#selection {
+	  top: == ::window[top] ;
+	}
+	#maingrid,#propbox {
+	  bottom: == ::window[bottom] ;
+	}
+	#k2,#selector,#maingrid {
+	  left: == ::window[left] ;
+	}
+	#selection,#query,#kidgrid,#propbox {
+	  right: == ::window[right] ;
+	}
+
+</style>
+        <script src="lib/jquery-2.1.4.min.js"></script>
+        <script>
+                $(function() {
+                        var lst = ["Film","Title","Actor","Director","Year","Person","Name","Year Born"];
+                        function x(filter) { 
+                                var y = ''; 
+                                var z = 0;
+                                $("#promptr").html(''); 
+                                for (var i=0; i<lst.length;i++) {
+                                        if (filter.length == 0 || filter.toLowerCase() == lst[i].substr(0, filter.length).toLowerCase()) 
+                                                y += '<option value="aa'+ (++z) +'">' + lst[i] + '</option>';
+                                }
+                                $("#promptr").append(y);
+                                $('#promptr').val('aa1').change();
+                        }
+                        x('');
+                        function selectedVal() { $('#selector').val($("#promptr option[value='"+$('#promptr').val()+"']").text()); $("#promptr").css('display', 'none'); }
+
+                        $("#promptr").click(function() { selectedVal(); });
+                        $("#selector").keypress(function(e) { 
+                                var code = e.keyCode || e.which; 
+                                //if (code == 38 || code == 40) $('#promptr').triggerHandler("keypress", e);
+                                //if (code == 13 || code == 9) selectedVal();
+                        });
+
+                        $("#selector").keyup(function(e) { 
+                                var code = e.keyCode || e.which; 
+                                i//f (code == 38 || code == 40) $('#promptr').trigger("keypress", e);
+                                if (code == 27) $("#promptr").css('display', 'none');
+                                //else { $("#promptr").css('display', 'block'); x($(this).val().trim()); }
+                        });
+                });
+        </script>
+        <script src="util.js"></script>
+        <script src="header.js"></script>
+        <script src="main.js"></script>
+        <script src="grid.js"></script>
+        <script src="grid_draw.js"></script>
+        <script src="events.js"></script>
+        <script src="scroll.js"></script>
+        <script src="data.js"></script>
+        <script src="vector.js"></script>
+<script src="node_modules/gss-engine/dist/gss.js"></script>
+ <script type="text/javascript">
+  window.engine = new GSS(document);
+  window.addEventListener('pageshow', function () {loadKayia()}, true);
+</script>
+</body>
+</html>
+~                                                                                                                                                                                   
+~                                                                                                                                                                                   
+~                                                                                                                                                                                   
+~                                                                                                                                                                                   
+~              
