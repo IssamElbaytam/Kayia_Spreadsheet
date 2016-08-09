@@ -1,9 +1,9 @@
 
 function runQuery(cmd) {
 
-	if (cmd == 'Film') grids.maingrid.loadDataToGridElement(JSON.parse('{"#ragingbull":{"Title":"Raging Bull","Director":"#mscorsese","Released":"1975"},"#delicatessen":{"Title":"Delicatessen","Director":["#jpjeunet","#mcaro"],"Released":"1991"},"#bluevelvet":{"Title":"Blue Velvet","Director":"#dlynch","Released":"1986"}}'))
+//	if (cmd == 'Film') grids.maingrid.loadDataToGridElement(JSON.parse('{"#ragingbull":{"Title":"Raging Bull","Director":"#mscorsese","Released":"1975"},"#delicatessen":{"Title":"Delicatessen","Director":["#jpjeunet","#mcaro"],"Released":"1991"},"#bluevelvet":{"Title":"Blue Velvet","Director":"#dlynch","Released":"1986"}}'))
 	
-	/*  This can be removed when placed on the site, or use http:// instead of https://
+	//  This can be removed when placed on the site, or use http:// instead of https://
         $.ajax({
                 type: 'GET',
                 url: "https://kayia.org/" + cmd,
@@ -19,7 +19,7 @@ function runQuery(cmd) {
                         console.log('error:' + e.statusText);
                 }
         });
-	*/
+	//
 }
 function flip(coll) { 
 	var result = {};
@@ -30,14 +30,14 @@ function flip(coll) {
 }
 
 Grid.prototype.getNextColOverrideIndex = function() {
-	for (var i = 0; i < Object.keys(this.col_override).length; i++) {
+	for (var i = 1; i < Object.keys(this.col_override).length+1; i++) {
 		if (!this.col_override[columnCode(i)]) break;
 	}
 	return columnCode(i);
 }
 
 Grid.prototype.getNextRowOverrideIndex = function() {
-	for (var i = 1; i <= Object.keys(this.row_override).length; i++) {
+	for (var i = 1; i <= Object.keys(this.row_override).length+1; i++) {
 		if (!this.row_override[''+i]) break;
 	}
 	return i;
